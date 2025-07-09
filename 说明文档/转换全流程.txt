@@ -1,0 +1,19 @@
+启动docker容器
+docker run -it --rm -v "D:\05 - 项目\01 - 旭日x3派\horizon_xj3_open_explorer_v2.2.3_20220617":/open_explorer -v "D:\01 - datasets":/data/horizon_x3/data -v "D:\05 - 项目\01 - 旭日x3派\BPUCodes":/data/horizon_x3/codes openexplorer/ai_toolchain_ubuntu_20_x5_cpu:v1.2.6-py10
+
+进入容器
+cd /data/horizon_x3/codes
+
+检查
+hb_mapper checker --model-type onnx --march bayes-e --model best.onnx
+
+运行代码获得校验数据
+python3 prepare_calibration_data.py
+
+开始转换
+hb_mapper checker --model-type onnx --march bayes-e --model best.onnx
+
+
+RDK X5部署YOLO算法教程（面向小白）https://developer.d-robotics.cc/forumDetail/256524800871478373
+[BPU部署教程] 一文带你轻松走出模型部署新手村  https://developer.d-robotics.cc/forumDetail/107952931390742029
+[BPU部署教程] 教你搞定YOLOV5部署 (版本_ 6.2)	https://developer.d-robotics.cc/forumDetail/112555549341653639
