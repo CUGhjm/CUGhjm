@@ -1,0 +1,137 @@
+方式一进行自启动发现摄像头打不开，程序卡死
+---------------------------------------------------------
+进入home/sunrise/
+sudo su
+
+进入init.d
+cd /etc/init.d/
+
+进入a.sh
+vim a.sh
+
+i:编辑
+路径 &
+Esc：退出编辑
+:wq保存退出
+
+设置启动脚本具有可执行权限
+sudo chmod +x /etc/init.d/a.sh
+
+使用update-rc.d命令将脚本添加到系统的启动项中
+sudo update-rc.d a.sh defaults
+
+使用systemctl命令启用自启动
+sudo systemctl enable a.sh
+
+重启
+sudo reboot
+
+重启后验证
+sudo systemctl status a.service
+
+https://developer.d-robotics.cc/rdk_doc/System_configuration/self_start
+-----------------------------------------------------------------------------------
+sudo rm /etc/init.d/a.sh          # 删除脚本文件
+sudo update-rc.d -f a.sh remove   # 移除旧的 init.d 启动项
+
+因为有摄像头，我们选择以下方法：
+----------------------------------------------------------------------------------
+创建服务文件：
+sudo nano /etc/systemd/system/a.service
+粘贴下述内容，按 Ctrl+O 保存，Ctrl+X 退出。
+
+粘贴文本：
+[Unit]
+Description=My Camera Application (Loop Mode)
+After=graphical.target network.target
+Wants=network.target
+
+[Service]
+Type=simple                          # 必须为 simple（循环脚本需前台运行）
+User=sunrise
+Group=sunrise
+WorkingDirectory=/app/pydev_demo/12_yolov5s_v6_v7_sample
+Environment="DISPLAY=:0"
+Environment="XAUTHORITY=/home/sunrise/.Xauthority"
+
+# important：直接运行循环脚本（确保脚本内有 while true 或等效逻辑）
+ExecStart=/usr/bin/python3 /app/pydev_demo/12_yolov5s_v6_v7_sample/mian.py
+
+# 资源限制（防止循环失控）
+MemoryMax=500M
+CPUQuota=80%
+
+# 日志配置（必须）
+StandardOutput=file:/var/log/a_service.log
+StandardError=file:/var/log/a_service_error.log
+Environment="PYTHONUNBUFFERED=1"    # 实时输出日志
+
+# 重启策略（按需调整）
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=graphical.target
+
+
+
+# 创建日志文件并授权
+sudo touch /var/log/a_service.log /var/log/a_service_error.log
+sudo chown sunrise:sunrise /var/log/a_service*.log
+
+# 应用配置
+sudo systemctl daemon-reload
+
+# 手动启动测试
+sudo systemctl restart a.service
+
+# 查看实时状态和日志
+sudo systemctl status a.service
+tail -f /var/log/a_service_error.log
+
+# 模拟重启
+sudo reboot
+
+# 重启后检查
+sudo systemctl status a.service
+journalctl -u a.service -b
+
+-------------------------------------------------------------------------
+修改程序的话：
+先停止正在运行的自启动：sudo systemctl stop a.service  # 先停止服务
+
+重启自启动服务：
+sudo systemctl start a.service         # 启动服务
+sudo systemctl status a.service       # 检查状态
+journalctl -u a.service -f            # 实时查看日志
+
+---------------------------------------------------------------------
+---附：全英文自启动脚本
+
+[Unit]
+Description=My Camera Application (Loop Mode)
+After=graphical.target network.target
+Wants=network.target
+
+[Service]
+Type=simple                      
+User=sunrise
+Group=sunrise
+WorkingDirectory=/app/pydev_demo/12_yolov5s_v6_v7_sample
+Environment="DISPLAY=:0"
+Environment="XAUTHORITY=/home/sunrise/.Xauthority"
+
+ExecStart=/usr/bin/python3 /app/pydev_demo/12_yolov5s_v6_v7_sample/mian.py
+
+MemoryMax=500M
+CPUQuota=80%
+
+StandardOutput=file:/var/log/a_service.log
+StandardError=file:/var/log/a_service_error.log
+Environment="PYTHONUNBUFFERED=1" 
+
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=graphical.target
