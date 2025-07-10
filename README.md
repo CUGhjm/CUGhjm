@@ -5,30 +5,54 @@
 
 Here are some ideas to get you started:
 
-# 基于 RDK X5 的机器视觉导盲头盔
+# Smart Blind Guide Helmet (RDK X5)
 
-本项目为 **全国大学生嵌入式芯片与系统设计竞赛 2025 自主命题作品**，设计并实现了一款基于 **RDK X5 边缘计算平台** 的智能导盲头盔，通过 **激光雷达 + YOLOv5m 视觉检测 + IMU 跌倒检测 + 环境光感知 + 多模态交互**，实现复杂环境下视障人士出行的实时障碍物检测、路径引导、夜间自动提示和跌倒检测报警，提升安全与独立出行能力。
+A lightweight, real-time smart guide helmet for visually impaired users, enabling **safe and independent outdoor travel**. Built on the RDK X5 edge AI platform, it combines LiDAR, YOLOv5m detection, IMU-based fall detection, ambient light sensing, and multimodal feedback to actively detect obstacles, recognize traffic signs, and provide real-time voice and vibration alerts.
 
-## 🚀 项目亮点
+**Features:**
+- Real-time object detection (YOLOv5m, pruned & quantized, 20 FPS)
+- LiDAR ±5cm accurate distance measurement up to 7m
+- IMU-based dynamic fall detection with auto GPS alert
+- Auto LED for low-light conditions
+- Voice and vibration feedback
+- Fully edge computing, no cloud dependency
 
-- ⚡ **实时检测**：YOLOv5m 剪枝量化，20FPS 实时运行  
-- 🎯 **高精度测距**：激光雷达 ±5cm 精度补盲区  
-- 🛡️ **跌倒报警**：IMU 跌倒检测，自动定位并发送报警  
-- 🌙 **夜间提示**：环境光感应自动开启 LED  
-- 🔊 **多模态交互**：语音提示 + 振动反馈  
-- 💡 **边缘计算**：完全本地推理，无需依赖云端
+**Hardware:**
+RDK X5 (10 TOPS NPU), N10P LiDAR, 1080p camera, MPU6050 IMU, ambient light sensor, LED, vibration motor, buzzer, 4G GPS module.
 
-## 🛠️ 硬件配置
+**Project Structure:**
+models/ (YOLOv5m models), scripts/ (LiDAR, YOLO, IMU, LED, feedback, main), dataset/ (sample data), docs/ (PDF, diagrams), requirements.txt, README.md.
 
-- **RDK X5** (10 TOPS 边缘计算)
-- N10P 激光雷达（7m）
-- 1080p RGB 摄像头 (20FPS)
-- MPU6050 IMU
-- 环境光传感器
-- LED 指示灯、蜂鸣器、振动马达
-- 4G 模块（含 GPS 定位）
+**Quick Start:**
+- Ubuntu 22.04 + Python 3.8+
+- Connect hardware (LiDAR, camera, IMU, LED, GPS)
+- Install dependencies: `pip install -r requirements.txt`
+- Run: `python scripts/main.py`
+- Features: obstacle detection, voice/vibration alerts, auto LED in low-light, fall detection with GPS alerts.
 
-## 📂 项目结构
+**Training:**
+- Annotate 3500+ images with LabelImg
+- Train YOLOv5m with pruning & quantization
+- Deploy `.pt` model on RDK X5
+- Detailed guide in `docs/system_design.pdf`.
+
+**Performance:**
+- Detection Accuracy: 92.3%
+- Latency: ≤100ms
+- LiDAR Range: 7m
+- Fall Response: 2s
+- Power: 32W
+- Runtime: 6h
+
+**Future Work:**
+Infrared night vision, smart traffic light integration, cloud-based route analysis, and adaptation for safety helmets in special industries.
+
+---
+
+**License:** MIT
+
+If this project helps you, consider ⭐ starring it to support future development.
+
 
 
 
